@@ -15,6 +15,7 @@ I would like to make a sidescrolling adventure game. This would involve moving r
 - More monsters
 - Progressive difficulty
 - Sound effects for attacking and blocking
-- better graphics
+- better graphics overall
 - Smooth animation
 - Boss enemy(s)
+- Background
