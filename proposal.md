@@ -1,13 +1,20 @@
 # Major Project Proposal
-Some short description of the project will go here
+I would like to make a sidescrolling adventure game. This would involve moving right and left and attacking monsters that spawn in from the left. It would be infinite.
 
 ## Need To Have List
-- things that must be completed
-- more things that you think must exist
-- etc...
+- Movement from left to right
+- Random monster generation
+- A combat system with an attack and a block
+- Monster AI to some degree (knows when to attack and when to block)
+- Some form of progression (gold dropped is used for upgrades)
+- Music
+- Retro style graphics
 
 ## Nice To Have List
-- things to do after done the need to have's
-- sound effects
+- More attack/defense options
+- More monsters
+- Progressive difficulty
+- Sound effects for attacking and blocking
 - better graphics
-- etc...
+- Smooth animation
+- Boss enemy(s)
