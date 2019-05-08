@@ -5,10 +5,14 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 let playerRun1, playerRun2, playerRun3, playerRun4, playerRun5, playerRun6, playerRun7, playerRun8;
+let playerMagic1, playerMagic2, playerMagic3, playerMagic4, playerMagic5, playerMagic6, playerMagic7, playerMagic8, playerMagic9;
 let runCycle = [];
+let magicCycle = [];
 let player1;
 let runSprite;
+let magicSprite;
 let runCycleTimer;
+let magicCycleTimer;
 
 function preload() {
   playerRun1 = loadImage("assets/playerRun1.png");
@@ -20,6 +24,16 @@ function preload() {
   playerRun7 = loadImage("assets/playerRun7.png");
   playerRun8 = loadImage("assets/playerRun8.png");
   runCycle = {currentImage: [playerRun1, playerRun2, playerRun3, playerRun4, playerRun5, playerRun6, playerRun7, playerRun8], imageNumber: 0};
+  playerMagic1 = loadImage("assets/playerMagic1.png");
+  playerMagic2 = loadImage("assets/playerMagic2.png");
+  playerMagic3 = loadImage("assets/playerMagic3.png");
+  playerMagic4 = loadImage("assets/playerMagic4.png");
+  playerMagic5 = loadImage("assets/playerMagic5.png");
+  playerMagic6 = loadImage("assets/playerMagic6.png");
+  playerMagic7 = loadImage("assets/playerMagic7.png");
+  playerMagic8 = loadImage("assets/playerMagic8.png");
+  playerMagic9 = loadImage("assets/playerMagic9.png");
+  magicCycle = {currentImage: [playerMagic1, playerMagic2, playerMagic3, playerMagic4, playerMagic5, playerMagic6, playerMagic7, playerMagic8, playerMagic9], imageNumber: 0};
 }
 
 class Timer {
@@ -44,6 +58,7 @@ class Player {
     this.speed = speed;
     this.move_right = false;
     this.move_left = false;
+    this.isAttacking = false;
   }
 
   move() {
@@ -56,7 +71,20 @@ class Player {
   }
 
   draw() {
-    if (this.move_right || this.move_left) {
+    if (this.isAttacking) {
+      if (magicCycleTimer.isDone()) {
+        magicSprite = magicCycle.currentImage[magicCycle.imageNumber];
+        if (magicCycle.imageNumber + 1 < magicCycle.currentImage.length) {
+          magicCycle.imageNumber++;
+        } 
+        else {
+          magicCycle.imageNumber = 0;
+        }
+        magicCycleTimer = new Timer(80);
+      }
+      image(magicSprite, this.x, this.y, this.width, this.width);
+    }
+    else if (this.move_right || this.move_left) {
       if (runCycleTimer.isDone()) {
         runSprite = runCycle.currentImage[runCycle.imageNumber];
         if (runCycle.imageNumber + 1 < runCycle.currentImage.length) {
@@ -79,7 +107,9 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   player1 = new Player(25, 4);
   runSprite = runCycle.currentImage[0];
+  magicSprite = magicCycle.currentImage[0];
   runCycleTimer = new Timer(80);
+  magicCycleTimer = new Timer(120);
 }
 
 function draw() {
@@ -100,6 +130,9 @@ function keyPressed() {
   }
   if (keyCode === LEFT_ARROW) {
     player1.move_left = true;
+  }
+  if (keyCode === UP_ARROW) {
+    player1.isAttacking = true;
   }
 }
 
