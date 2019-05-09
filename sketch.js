@@ -62,11 +62,13 @@ class Player {
   }
 
   move() {
-    if (this.move_right && this.x + this.width <= width) {
-      this.x += this.speed;
-    }
-    if (this.move_left && this.x   >= 0) {
-      this.x += -this.speed;
+    if (!this.isAttacking) {
+      if (this.move_right && this.x + this.width <= width) {
+        this.x += this.speed;
+      }
+      if (this.move_left && this.x   >= 0) {
+        this.x += -this.speed;
+      }
     }
   }
 
@@ -79,6 +81,7 @@ class Player {
         } 
         else {
           magicCycle.imageNumber = 0;
+          this.isAttacking = false;
         }
         magicCycleTimer = new Timer(80);
       }
@@ -99,6 +102,14 @@ class Player {
     }
     else {
       image(playerRun1, this.x, this.y, this.width , this.width);
+    }
+  }
+}
+
+class Enemy {
+  constructor(type) {
+    if (type === "walker") {
+      this.speed = 5;
     }
   }
 }
@@ -131,7 +142,7 @@ function keyPressed() {
   if (keyCode === LEFT_ARROW) {
     player1.move_left = true;
   }
-  if (keyCode === UP_ARROW) {
+  if (key === "a") {
     player1.isAttacking = true;
   }
 }
