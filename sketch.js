@@ -52,6 +52,7 @@ class Timer {
 
 class Player {
   constructor(x, speed) {
+    this.health = 100;
     this.width = 128;
     this.y = height * 0.75;
     this.x = x;
@@ -109,25 +110,51 @@ class Player {
 class Enemy {
   constructor(type) {
     if (type === "walker") {
-      this.speed = 5;
+      this.width = 25;
+      this.x = windowWidth - this.width;
+      this.speed = 2;
     }
   }
-}
 
+  move() {
+    this.x -= this.speed;
+  }
+
+  draw() {
+    fill(0, 255, 200);
+    rect(this.x, height - 70 - this.width, this.width, this.width);
+  }
+}
+let enemy1;
+let healthtimer;
 function setup() {
   createCanvas(windowWidth, windowHeight);
   player1 = new Player(25, 4);
   runSprite = runCycle.currentImage[0];
   magicSprite = magicCycle.currentImage[0];
   runCycleTimer = new Timer(80);
-  magicCycleTimer = new Timer(120);
+  magicCycleTimer = new Timer(80);
+  enemy1 = new Enemy("walker");
+  healthtimer = new Timer(1000);
 }
 
 function draw() {
   background(220);
   playerFunctions();
+  ///Health Bar
+  fill(0);
+  rect(20, 20, 500, 50);
+  fill(215, 0, 0);
+  rect(20, 20, player1.health * 5, 50);
+  /////////////
   fill(0);
   rect(0, height - 70, width, 75);
+  enemy1.draw();
+  enemy1.move();
+  if (healthtimer.isDone()) {
+    player1.health -= 25;
+    healthtimer = new Timer(1000);
+  }
 }
 
 function playerFunctions() {
@@ -154,4 +181,8 @@ function keyReleased() {
   if (keyCode === LEFT_ARROW) {
     player1.move_left = false;
   }
+}
+
+function windowResized() {
+  createCanvas(windowWidth, windowHeight);
 }
