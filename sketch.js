@@ -155,6 +155,7 @@ function draw() {
     player1.health -= 25;
     healthtimer = new Timer(1000);
   }
+  player1.health = constrain(player1.health, 0, player1.health);
 }
 
 function playerFunctions() {
