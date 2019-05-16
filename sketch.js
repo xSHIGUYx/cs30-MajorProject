@@ -13,6 +13,8 @@ let runSprite;
 let magicSprite;
 let runCycleTimer;
 let magicCycleTimer;
+let enemyList = [];
+let playerDamageAlarm;
 
 function preload() {
   playerRun1 = loadImage("assets/playerRun1.png");
@@ -60,6 +62,15 @@ class Player {
     this.move_right = false;
     this.move_left = false;
     this.isAttacking = false;
+  }
+
+  damageCheck() {
+    for (let i = 0; i < enemyList.length; i++) {
+      if (enemyList[i].x < this.x + this.width && enemyList[i].x + enemyList[i].width > this.x && playerDamageAlarm.isDone()) {
+        playerDamageAlarm = new Timer(600);
+        this.health -= 25;
+      }
+    }
   }
 
   move() {
@@ -125,8 +136,7 @@ class Enemy {
     rect(this.x, height - 70 - this.width, this.width, this.width);
   }
 }
-let enemy1;
-let healthtimer;
+
 function setup() {
   createCanvas(windowWidth, windowHeight);
   player1 = new Player(25, 4);
@@ -134,33 +144,37 @@ function setup() {
   magicSprite = magicCycle.currentImage[0];
   runCycleTimer = new Timer(80);
   magicCycleTimer = new Timer(80);
-  enemy1 = new Enemy("walker");
-  healthtimer = new Timer(1000);
+  let enemy1 = new Enemy("walker");
+  enemyList.push(enemy1);
+  playerDamageAlarm = new Timer(1);
 }
 
 function draw() {
   background(220);
   playerFunctions();
-  ///Health Bar
-  fill(0);
-  rect(20, 20, 500, 50);
-  fill(215, 0, 0);
-  rect(20, 20, player1.health * 5, 50);
-  /////////////
-  fill(0);
-  rect(0, height - 70, width, 75);
-  enemy1.draw();
-  enemy1.move();
-  if (healthtimer.isDone()) {
-    player1.health -= 25;
-    healthtimer = new Timer(1000);
-  }
-  player1.health = constrain(player1.health, 0, player1.health);
+  enemyFunctions();
 }
 
 function playerFunctions() {
   player1.draw();
   player1.move();
+  player1.damageCheck();
+  ///Health Bar
+  fill(0);
+  rect(0, height - 70, width, 75);
+  fill(0);
+  rect(20, 20, 500, 50);
+  fill(215, 0, 0);
+  rect(20, 20, player1.health * 5, 50);
+  /////////////
+  player1.health = constrain(player1.health, 0, player1.health);
+}
+
+function enemyFunctions() {
+  for (let i = 0; i < enemyList.length; i++) {
+    enemyList[i].move();
+    enemyList[i].draw();
+  }
 }
 
 function keyPressed() {
