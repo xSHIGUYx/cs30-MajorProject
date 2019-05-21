@@ -55,6 +55,7 @@ class Timer {
 class Player {
   constructor(x, speed) {
     this.health = 100;
+    this.maxHealth = this.health;
     this.width = 128;
     this.y = height * 0.75;
     this.x = x;
@@ -84,7 +85,23 @@ class Player {
     }
   }
 
+  drawHealth() {
+    fill(0);
+    rect(20, 20, 500, 50);
+    if (this.health >= this.maxHealth * 0.6) {
+      fill(0, 215, 0);
+    }
+    else if (this.health >= this.maxHealth * 0.3) {
+      fill(180, 180, 0);
+    }
+    else{
+      fill(215, 0, 0);
+    }
+    rect(20, 20, this.health * 5, 50);
+  }
+
   draw() {
+    //Attack animation
     if (this.isAttacking) {
       if (magicCycleTimer.isDone()) {
         magicSprite = magicCycle.currentImage[magicCycle.imageNumber];
@@ -99,6 +116,7 @@ class Player {
       }
       image(magicSprite, this.x, this.y, this.width, this.width);
     }
+    ///Movement animation
     else if (this.move_right || this.move_left) {
       if (runCycleTimer.isDone()) {
         runSprite = runCycle.currentImage[runCycle.imageNumber];
@@ -121,9 +139,9 @@ class Player {
 class Enemy {
   constructor(type) {
     if (type === "walker") {
-      this.width = 25;
+      this.width = 50;
       this.x = windowWidth - this.width;
-      this.speed = 2;
+      this.speed = 3;
     }
   }
 
@@ -150,23 +168,23 @@ function setup() {
 }
 
 function draw() {
-  background(220);
+  drawBackground();
   playerFunctions();
   enemyFunctions();
+}
+
+function drawBackground() {
+  background(220);
+  ///Floor
+  fill(0);
+  rect(0, height - 70, width, 75);
 }
 
 function playerFunctions() {
   player1.draw();
   player1.move();
   player1.damageCheck();
-  ///Health Bar
-  fill(0);
-  rect(0, height - 70, width, 75);
-  fill(0);
-  rect(20, 20, 500, 50);
-  fill(215, 0, 0);
-  rect(20, 20, player1.health * 5, 50);
-  /////////////
+  player1.drawHealth();
   player1.health = constrain(player1.health, 0, player1.health);
 }
 
