@@ -7,25 +7,22 @@
 
 let runCycle = [];
 let magicCycle = [];
-let player1;
+let player;
 let runSprite;
 let magicSprite;
 let runCycleTimer;
 let magicCycleTimer;
 let enemyList = [];
-let playerDamageAlarm;
 
 function preload() {
   runCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 9; i++) {
-    let playerRun = loadImage("assets/playerRun" + i + ".png");
-    runCycle.currentImage.push(playerRun);
+    runCycle.currentImage.push(loadImage("assets/playerRun" + i + ".png"));
   }
 
-  magicCycle = {currentImage: [], imageNumber: 0}
+  magicCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 10; i++) {
-    let playerMagic = loadImage("assets/playerMagic" + i + ".png");
-    magicCycle.currentImage.push(playerMagic);
+    magicCycle.currentImage.push(loadImage("assets/playerMagic" + i + ".png"));
   }
 }
 
@@ -54,13 +51,15 @@ class Player {
     this.move_right = false;
     this.move_left = false;
     this.isAttacking = false;
+    this.damageAlarm = new Timer(0);
+    this.damageDealt = 5;
   }
 
   damageCheck() {
     for (let i = 0; i < enemyList.length; i++) {
-      if (enemyList[i].x < this.x + this.width && enemyList[i].x + enemyList[i].width > this.x && playerDamageAlarm.isDone()) {
-        playerDamageAlarm = new Timer(600);
-        this.health -= 25;
+      if (enemyList[i].x < this.x + this.width - 30 && enemyList[i].x + enemyList[i].width > this.x + 30 && this.damageAlarm.isDone()) {
+        this.damageAlarm = new Timer(600);
+        this.health -= enemyList[i].damageDealt;
       }
     }
   }
@@ -132,7 +131,12 @@ class Enemy {
     if (type === "walker") {
       this.width = 50;
       this.x = windowWidth - this.width;
+      this.y = height - 70 - this.width;
       this.speed = 3;
+      this.health = 10;
+      this.maxHealth = this.health;
+      this.damageDealt = 25;
+      this.damageAlarm = new Timer(0);
     }
   }
 
@@ -144,18 +148,41 @@ class Enemy {
     fill(0, 255, 200);
     rect(this.x, height - 70 - this.width, this.width, this.width);
   }
+
+  drawHealth() {
+    fill(0);
+    rect(this.x, this.y - 20, this.maxHealth * 5, 10);
+    if (this.health >= this.maxHealth * 0.6) {
+      fill(0, 215, 0);
+    }
+    else if (this.health >= this.maxHealth * 0.3) {
+      fill(180, 180, 0);
+    }
+    else{
+      fill(215, 0, 0);
+    }
+    rect(this.x, this.y - 20, this.health * 5, 10);
+  }
+
+  damageCheck() {
+    if (player.x < this.x + this.width && player.x + player.width > this.x && this.damageAlarm.isDone() && player.isAttacking) {
+      this.damageAlarm = new Timer(400);
+      this.health -= player.damageDealt;
+      if (this.health <= 0) {
+        enemyList.pop(enemyList[this]);
+      }
+    }
+  }
 }
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
-  player1 = new Player(25, 4);
+  player = new Player(25, 4);
   runSprite = runCycle.currentImage[0];
   magicSprite = magicCycle.currentImage[0];
   runCycleTimer = new Timer(80);
   magicCycleTimer = new Timer(80);
-  let enemy1 = new Enemy("walker");
-  enemyList.push(enemy1);
-  playerDamageAlarm = new Timer(1);
+  enemyList.push(new Enemy("walker"));
 }
 
 function draw() {
@@ -172,38 +199,40 @@ function drawBackground() {
 }
 
 function playerFunctions() {
-  player1.draw();
-  player1.move();
-  player1.damageCheck();
-  player1.drawHealth();
-  player1.health = constrain(player1.health, 0, player1.health);
+  player.draw();
+  player.move();
+  player.damageCheck();
+  player.drawHealth();
+  player.health = constrain(player.health, 0, player.health);
 }
 
 function enemyFunctions() {
   for (let i = 0; i < enemyList.length; i++) {
     enemyList[i].move();
     enemyList[i].draw();
+    enemyList[i].drawHealth();
+    enemyList[i].damageCheck();
   }
 }
 
 function keyPressed() {
   if (keyCode === RIGHT_ARROW) {
-    player1.move_right = true;
+    player.move_right = true;
   }
   if (keyCode === LEFT_ARROW) {
-    player1.move_left = true;
+    player.move_left = true;
   }
   if (key === "a") {
-    player1.isAttacking = true;
+    player.isAttacking = true;
   }
 }
 
 function keyReleased() {
   if (keyCode === RIGHT_ARROW) {
-    player1.move_right = false;
+    player.move_right = false;
   }
   if (keyCode === LEFT_ARROW) {
-    player1.move_left = false;
+    player.move_left = false;
   }
 }
 
