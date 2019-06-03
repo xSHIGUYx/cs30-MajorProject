@@ -10,6 +10,7 @@ let rollerCycle;
 let player;
 let runCycleTimer;
 let magicCycleTimer;
+let rollerCycleTimer;
 let enemyList = [];
 
 function preload() {
@@ -60,7 +61,8 @@ class Player {
 
   damageCheck() {
     for (let i = 0; i < enemyList.length; i++) {
-      if (enemyList[i].x < this.x + this.width - 30 && enemyList[i].x + enemyList[i].width > this.x + 30 && this.damageAlarm.isDone()) {
+      if (enemyList[i].x < this.x + this.width - 30 && enemyList[i].x + enemyList[i].width > this.x + 30 
+        && this.damageAlarm.isDone() && magicCycle.imageNumber < 4 && enemyList[i].damageAlarm.isDone()) {
         this.damageAlarm = new Timer(600);
         this.health -= enemyList[i].damageDealt;
       }
@@ -130,8 +132,9 @@ class Player {
 
 class Enemy {
   constructor(type) {
+    this.type = type;
     if (type === "walker") {
-      this.width = 50;
+      this.width = 120;
       this.x = windowWidth - this.width;
       this.y = height - 70 - this.width;
       this.speed = -3;
@@ -152,19 +155,23 @@ class Enemy {
   }
 
   draw() {
-    // if (this.damageAlarm.isDone()) {
-    //   fill(0, 255, 200);
-    // }
-    // else {
-    //   fill(200, 40, 0);
-    // }
-    //rect(this.x, height - 70 - this.width, this.width, this.width);
-    image(rollerCycle.currentImage[0], this.x, height - 70 - this.width, this.width, this.width);
+    if (this.type === "walker") {
+      if (rollerCycleTimer.isDone()) {
+        if (rollerCycle.imageNumber + 1 < rollerCycle.currentImage.length) {
+          rollerCycle.imageNumber++;
+        }
+        else {
+          rollerCycle.imageNumber = 0;
+        }
+        rollerCycleTimer = new Timer(80);
+      }
+      image(rollerCycle.currentImage[rollerCycle.imageNumber], this.x, this.y, this.width, this.width);
+    }
   }
 
   drawHealth() {
     fill(0);
-    rect(this.x, this.y - 20, this.maxHealth * 5, 10);
+    rect(this.x, this.y - 20, this.maxHealth * 12, 10);
     if (this.health >= this.maxHealth * 0.6) {
       fill(0, 215, 0);
     }
@@ -174,11 +181,12 @@ class Enemy {
     else{
       fill(215, 0, 0);
     }
-    rect(this.x, this.y - 20, this.health * 5, 10);
+    rect(this.x, this.y - 20, this.health * 12, 10);
   }
 
   damageCheck() {
-    if (player.x < this.x + this.width && player.x + player.width > this.x && this.damageAlarm.isDone() && player.isAttacking && magicCycle.imageNumber > 4) {
+    if (player.x < this.x + this.width && player.x + player.width > this.x && this.damageAlarm.isDone() 
+    && player.isAttacking && magicCycle.imageNumber > 4 && magicCycle.imageNumber < 6) {
       this.damageAlarm = new Timer(400);
       this.health -= player.damageDealt;
     }
@@ -190,6 +198,7 @@ function setup() {
   player = new Player(25, 4);
   runCycleTimer = new Timer(80);
   magicCycleTimer = new Timer(80);
+  rollerCycleTimer = new Timer(80);
   window.setInterval(enemyCreate, 5000);
 }
 
