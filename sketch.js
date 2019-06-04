@@ -14,16 +14,19 @@ let rollerCycleTimer;
 let enemyList = [];
 
 function preload() {
+  runCycleTimer = new Timer(0);
   runCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 9; i++) {
     runCycle.currentImage.push(loadImage("assets/playerRun/playerRun" + i + ".png"));
   }
 
+  magicCycleTimer = new Timer(0);
   magicCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 10; i++) {
     magicCycle.currentImage.push(loadImage("assets/playerMagic/playerMagic" + i + ".png"));
   }
 
+  rollerCycleTimer = new Timer(0);
   rollerCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 6; i++) {
     rollerCycle.currentImage.push(loadImage("assets/roller/roller" + i + ".png"));
@@ -97,6 +100,8 @@ class Player {
   }
 
   draw() {
+    fill(255, 0 , 0);
+    rect(this.x, this.y, this.width, this.width);
     //Attack animation
     if (this.isAttacking) {
       if (magicCycleTimer.isDone()) {
@@ -196,9 +201,6 @@ class Enemy {
 function setup() {
   createCanvas(windowWidth, windowHeight);
   player = new Player(25, 4);
-  runCycleTimer = new Timer(80);
-  magicCycleTimer = new Timer(80);
-  rollerCycleTimer = new Timer(80);
   window.setInterval(enemyCreate, 5000);
 }
 
