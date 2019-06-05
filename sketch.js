@@ -12,6 +12,7 @@ let runCycleTimer;
 let magicCycleTimer;
 let rollerCycleTimer;
 let enemyList = [];
+let floor = 70;
 
 function preload() {
   runCycleTimer = new Timer(0);
@@ -52,7 +53,7 @@ class Player {
     this.health = 100;
     this.maxHealth = this.health;
     this.width = 128;
-    this.y = height * 0.75;
+    this.y = height - this.width - floor;
     this.x = x;
     this.speed = speed;
     this.move_right = false;
@@ -102,6 +103,8 @@ class Player {
   draw() {
     fill(255, 0 , 0);
     rect(this.x, this.y, this.width, this.width);
+    fill("cyan");
+    rect(this.x + 30, this.y, this.width - 60, this.width);
     //Attack animation
     if (this.isAttacking) {
       if (magicCycleTimer.isDone()) {
@@ -140,8 +143,8 @@ class Enemy {
     this.type = type;
     if (type === "walker") {
       this.width = 120;
-      this.x = windowWidth - this.width;
-      this.y = height - 70 - this.width;
+      this.x = width - this.width;
+      this.y = height - floor - this.width;
       this.speed = -3;
       this.health = 10;
       this.maxHealth = this.health;
@@ -161,6 +164,8 @@ class Enemy {
 
   draw() {
     if (this.type === "walker") {
+      fill("green");
+      rect(this.x, this.y, this.width, this.width);
       if (rollerCycleTimer.isDone()) {
         if (rollerCycle.imageNumber + 1 < rollerCycle.currentImage.length) {
           rollerCycle.imageNumber++;
@@ -176,7 +181,7 @@ class Enemy {
 
   drawHealth() {
     fill(0);
-    rect(this.x, this.y - 20, this.maxHealth * 12, 10);
+    rect(this.x, this.y - 20, this.width, 10);
     if (this.health >= this.maxHealth * 0.6) {
       fill(0, 215, 0);
     }
@@ -186,7 +191,7 @@ class Enemy {
     else{
       fill(215, 0, 0);
     }
-    rect(this.x, this.y - 20, this.health * 12, 10);
+    rect(this.x, this.y - 20, this.health * this.width / 10, 10);
   }
 
   damageCheck() {
@@ -199,7 +204,7 @@ class Enemy {
 }
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
+  createCanvas(1600, 789);
   player = new Player(25, 4);
   window.setInterval(enemyCreate, 5000);
 }
@@ -218,7 +223,7 @@ function drawBackground() {
   background(220);
   ///Floor
   fill(0);
-  rect(0, height - 70, width, 75);
+  rect(0, height - floor, width, 75);
 }
 
 function playerFunctions() {
@@ -261,8 +266,4 @@ function keyReleased() {
   if (keyCode === LEFT_ARROW) {
     player.move_left = false;
   }
-}
-
-function windowResized() {
-  createCanvas(windowWidth, windowHeight);
 }
