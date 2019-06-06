@@ -65,7 +65,7 @@ class Player {
 
   damageCheck() {
     for (let i = 0; i < enemyList.length; i++) {
-      if (enemyList[i].x < this.x + this.width - 30 && enemyList[i].x + enemyList[i].width > this.x + 30 
+      if (enemyList[i].x < this.x + this.width - 35 && enemyList[i].x + enemyList[i].width > this.x + 35 
         && this.damageAlarm.isDone() && magicCycle.imageNumber < 4 && enemyList[i].damageAlarm.isDone()) {
         this.damageAlarm = new Timer(600);
         this.health -= enemyList[i].damageDealt;
@@ -104,7 +104,7 @@ class Player {
     fill(255, 0 , 0);
     rect(this.x, this.y, this.width, this.width);
     fill("cyan");
-    rect(this.x + 30, this.y, this.width - 60, this.width);
+    rect(this.x + 35, this.y, this.width - 70, this.width);
     //Attack animation
     if (this.isAttacking) {
       if (magicCycleTimer.isDone()) {
@@ -195,7 +195,7 @@ class Enemy {
   }
 
   damageCheck() {
-    if (player.x < this.x + this.width && player.x + player.width > this.x && this.damageAlarm.isDone() 
+    if (this.x <= player.x + player.width && this.x + this.width >= player.x + player.width - 35 && this.damageAlarm.isDone() 
     && player.isAttacking && magicCycle.imageNumber > 4 && magicCycle.imageNumber < 6) {
       this.damageAlarm = new Timer(400);
       this.health -= player.damageDealt;
