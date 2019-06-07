@@ -10,6 +10,8 @@ let rollerCycle;
 let player;
 let runCycleTimer;
 let magicCycleTimer;
+let stabCycle;
+let stabCycleTimer;
 let rollerCycleTimer;
 let enemyList = [];
 let floor = 70;
@@ -32,6 +34,13 @@ function preload() {
   for (let i = 1; i < 6; i++) {
     rollerCycle.currentImage.push(loadImage("assets/roller/roller" + i + ".png"));
   }
+
+  stabCycleTimer = new Timer(0);
+  stabCycle = {currentImage: [], imageNumber: 0};
+  for (let i = 1; i < 13; i++) {
+    stabCycle.currentImage.push(loadImage("assets/playerStab/playerStab" + i + ".png"));
+  }
+  print(stabCycle.currentImage);
 }
 
 class Timer {
@@ -101,23 +110,21 @@ class Player {
   }
 
   draw() {
-    fill(255, 0 , 0);
-    rect(this.x, this.y, this.width, this.width);
-    fill("cyan");
-    rect(this.x + 35, this.y, this.width - 70, this.width);
-    //Attack animation
+    //Alt Attack animation
     if (this.isAttacking) {
-      if (magicCycleTimer.isDone()) {
-        if (magicCycle.imageNumber + 1 < magicCycle.currentImage.length) {
-          magicCycle.imageNumber++;
+      // fill(255, 0 , 0);
+      // rect(this.x + this.width / 2, this.y + this.width / 3, this.width * 1.5, this.width / 2);
+      if (stabCycleTimer.isDone()) {
+        if (stabCycle.imageNumber + 1 < stabCycle.currentImage.length) {
+          stabCycle.imageNumber++;
         } 
         else {
-          magicCycle.imageNumber = 0;
+          stabCycle.imageNumber = 0;
           this.isAttacking = false;
         }
-        magicCycleTimer = new Timer(80);
+        stabCycleTimer = new Timer(80);
       }
-      image(magicCycle.currentImage[magicCycle.imageNumber], this.x, this.y, this.width, this.width);
+      image(stabCycle.currentImage[stabCycle.imageNumber], this.x + 20, this.y - 128, this.width * 2, this.width * 2);
     }
     ///Movement animation
     else if (this.move_right || this.move_left) {
@@ -164,8 +171,6 @@ class Enemy {
 
   draw() {
     if (this.type === "walker") {
-      fill("green");
-      rect(this.x, this.y, this.width, this.width);
       if (rollerCycleTimer.isDone()) {
         if (rollerCycle.imageNumber + 1 < rollerCycle.currentImage.length) {
           rollerCycle.imageNumber++;
@@ -195,8 +200,8 @@ class Enemy {
   }
 
   damageCheck() {
-    if (this.x <= player.x + player.width && this.x + this.width >= player.x + player.width - 35 && this.damageAlarm.isDone() 
-    && player.isAttacking && magicCycle.imageNumber > 4 && magicCycle.imageNumber < 6) {
+    if (this.x <= player.x + player.width * 1.5 && this.x + this.width >= player.x + player.width / 2 && this.damageAlarm.isDone() 
+    && player.isAttacking && stabCycle.imageNumber >= 9) {
       this.damageAlarm = new Timer(400);
       this.health -= player.damageDealt;
     }
