@@ -15,6 +15,8 @@ let stabCycleTimer;
 let rollerCycleTimer;
 let enemyList = [];
 let floor = 70;
+let blood;
+let bloodList = [];
 
 function preload() {
   runCycleTimer = new Timer(0);
@@ -40,7 +42,8 @@ function preload() {
   for (let i = 1; i < 13; i++) {
     stabCycle.currentImage.push(loadImage("assets/playerStab/playerStab" + i + ".png"));
   }
-  print(stabCycle.currentImage);
+
+  blood = loadImage("assets/blood.png");
 }
 
 class Timer {
@@ -54,6 +57,25 @@ class Timer {
 
   isDone() {
     return millis() >= this.endTime;
+  }
+}
+
+class Blood {
+  constructor(creator) {
+    this.x = creator.x;
+    this.y = creator.y;
+    this.dir = random(360);
+    this.speed = random(2, 5);
+    this.width = 30;
+    this.height = 10;
+  }
+
+  move() {
+    this.x += this.speed;
+  }
+
+  draw() {
+    image(blood, this.x, this.y, this.width, this.height);
   }
 }
 
@@ -204,6 +226,9 @@ class Enemy {
     && player.isAttacking && stabCycle.imageNumber >= 9) {
       this.damageAlarm = new Timer(400);
       this.health -= player.damageDealt;
+      for (let i = 0; i < random(5, 10); i++) {
+        bloodList.push(new Blood(this));
+      }
     }
   }
 }
@@ -222,6 +247,10 @@ function draw() {
   drawBackground();
   playerFunctions();
   enemyFunctions();
+  for (let i = 0; i < bloodList.length; i++) {
+    bloodList[i].move();
+    bloodList[i].draw();
+  }
 }
 
 function drawBackground() {
