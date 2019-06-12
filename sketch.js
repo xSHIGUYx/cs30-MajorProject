@@ -62,20 +62,27 @@ class Timer {
 
 class Blood {
   constructor(creator) {
-    this.x = creator.x;
-    this.y = creator.y;
+    this.x = creator.x + creator.width/2;
+    this.y = creator.y + creator.width/2;
     this.dir = random(360);
     this.speed = random(2, 5);
+    this.alpha = 0;
     this.width = 30;
     this.height = 10;
   }
 
   move() {
-    this.x += this.speed;
+    this.alpha += 0.25;
+    this.x += Math.cos(this.dir) * this.speed;
+    this.y += Math.sin(this.dir) * this.speed;
   }
 
   draw() {
-    image(blood, this.x, this.y, this.width, this.height);
+    push();
+    translate(this.x, this.y);
+    rotate(this.dir);
+    image(blood, 0, 0, this.width, this.height, this.alpha);
+    pop();
   }
 }
 
