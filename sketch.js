@@ -65,14 +65,14 @@ class Blood {
     this.x = creator.x + creator.width/2;
     this.y = creator.y + creator.width/2;
     this.dir = random(360);
-    this.speed = random(2, 5);
+    this.speed = random(7, 10);
     this.alpha = 0;
     this.width = 30;
     this.height = 10;
   }
 
   move() {
-    this.alpha += 0.25;
+    this.alpha++;
     this.x += Math.cos(this.dir) * this.speed;
     this.y += Math.sin(this.dir) * this.speed;
   }
@@ -81,7 +81,7 @@ class Blood {
     push();
     translate(this.x, this.y);
     rotate(this.dir);
-    image(blood, 0, 0, this.width, this.height, this.alpha);
+    image(blood, 0, 0, this.width, this.height, 0, this.alpha);
     pop();
   }
 }
