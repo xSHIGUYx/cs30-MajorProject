@@ -1,43 +1,34 @@
-// Project Title
-// Your Name
-// Date
+// Skeleton Go Right
+// Shiloh Berscheid
+// 6/17/2019
 //
-// Extra for Experts:
+// Extra for Experts:                                  
 // - describe what you did to take this project "above and beyond"
 
-let runCycle, magicCycle;
+let FLOOR = 70;
+let runCycle, magicCycle, stabCycle;
 let rollerCycle;
 let player;
-let runCycleTimer;
-let magicCycleTimer;
-let stabCycle;
-let stabCycleTimer;
-let rollerCycleTimer;
-let enemyList = [];
-let floor = 70;
 let blood;
 let bloodList = [];
+let enemyList = [];
 
 function preload() {
-  runCycleTimer = new Timer(0);
   runCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 9; i++) {
     runCycle.currentImage.push(loadImage("assets/playerRun/playerRun" + i + ".png"));
   }
 
-  magicCycleTimer = new Timer(0);
   magicCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 10; i++) {
     magicCycle.currentImage.push(loadImage("assets/playerMagic/playerMagic" + i + ".png"));
   }
 
-  rollerCycleTimer = new Timer(0);
   rollerCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 6; i++) {
     rollerCycle.currentImage.push(loadImage("assets/roller/roller" + i + ".png"));
   }
 
-  stabCycleTimer = new Timer(0);
   stabCycle = {currentImage: [], imageNumber: 0};
   for (let i = 1; i < 13; i++) {
     stabCycle.currentImage.push(loadImage("assets/playerStab/playerStab" + i + ".png"));
@@ -91,14 +82,17 @@ class Player {
     this.health = 100;
     this.maxHealth = this.health;
     this.width = 128;
-    this.y = height - this.width - floor;
+    this.y = height - this.width - FLOOR;
     this.x = x;
     this.speed = speed;
     this.move_right = false;
     this.move_left = false;
     this.isAttacking = false;
     this.damageAlarm = new Timer(0);
+    this.attackTimer = new Timer(0);
+    this.runTimer = new Timer(0);
     this.damageDealt = 5;
+    this.tempHealth = this.health;
   }
 
   damageCheck() {
@@ -124,18 +118,21 @@ class Player {
   }
 
   drawHealth() {
+    if (this.tempHealth !== this.health) {
+      this.tempHealth -= 0.5;
+    }
     fill(0);
     rect(20, 20, 500, 50);
-    if (this.health >= this.maxHealth * 0.6) {
+    if (this.tempHealth >= this.maxHealth * 0.6) {
       fill(0, 215, 0);
     }
-    else if (this.health >= this.maxHealth * 0.3) {
+    else if (this.tempHealth >= this.maxHealth * 0.3) {
       fill(180, 180, 0);
     }
     else{
       fill(215, 0, 0);
     }
-    rect(20, 20, this.health * 5, 50);
+    rect(20, 20, this.tempHealth * 5, 50);
   }
 
   draw() {
@@ -143,7 +140,7 @@ class Player {
     if (this.isAttacking) {
       // fill(255, 0 , 0);
       // rect(this.x + this.width / 2, this.y + this.width / 3, this.width * 1.5, this.width / 2);
-      if (stabCycleTimer.isDone()) {
+      if (this.attackTimer.isDone()) {
         if (stabCycle.imageNumber + 1 < stabCycle.currentImage.length) {
           stabCycle.imageNumber++;
         } 
@@ -151,20 +148,20 @@ class Player {
           stabCycle.imageNumber = 0;
           this.isAttacking = false;
         }
-        stabCycleTimer = new Timer(80);
+        this.attackTimer = new Timer(80);
       }
       image(stabCycle.currentImage[stabCycle.imageNumber], this.x + 20, this.y - 128, this.width * 2, this.width * 2);
     }
     ///Movement animation
     else if (this.move_right || this.move_left) {
-      if (runCycleTimer.isDone()) {
+      if (this.runTimer.isDone()) {
         if (runCycle.imageNumber + 1 < runCycle.currentImage.length) {
           runCycle.imageNumber++;
         } 
         else {
           runCycle.imageNumber = 0;
         }
-        runCycleTimer = new Timer(80);
+        this.runTimer = new Timer(80);
       }
       image(runCycle.currentImage[runCycle.imageNumber], this.x, this.y, this.width, this.width);
     }
@@ -180,12 +177,14 @@ class Enemy {
     if (type === "walker") {
       this.width = 120;
       this.x = width - this.width;
-      this.y = height - floor - this.width;
+      this.y = height - FLOOR - this.width;
       this.speed = -3;
       this.health = 10;
       this.maxHealth = this.health;
       this.damageDealt = 25;
       this.damageAlarm = new Timer(0);
+      this.timer = new Timer(0);
+      this.cycle = rollerCycle;
     }
   }
 
@@ -199,18 +198,16 @@ class Enemy {
   }
 
   draw() {
-    if (this.type === "walker") {
-      if (rollerCycleTimer.isDone()) {
-        if (rollerCycle.imageNumber + 1 < rollerCycle.currentImage.length) {
-          rollerCycle.imageNumber++;
-        }
-        else {
-          rollerCycle.imageNumber = 0;
-        }
-        rollerCycleTimer = new Timer(80);
+    if (this.timer.isDone()) {
+      if (this.cycle.imageNumber + 1 < this.cycle.currentImage.length) {
+        this.cycle.imageNumber++;
       }
-      image(rollerCycle.currentImage[rollerCycle.imageNumber], this.x, this.y, this.width, this.width);
+      else {
+        this.cycle.imageNumber = 0;
+      }
+      this.timer = new Timer(90);
     }
+    image(this.cycle.currentImage[this.cycle.imageNumber], this.x, this.y, this.width, this.width);
   }
 
   drawHealth() {
@@ -262,9 +259,9 @@ function draw() {
 
 function drawBackground() {
   background(220);
-  ///Floor
+  ///FLOOR
   fill(0);
-  rect(0, height - floor, width, 75);
+  rect(0, height - FLOOR, width, 75);
 }
 
 function playerFunctions() {
@@ -282,7 +279,7 @@ function enemyFunctions() {
     enemyList[i].damageCheck();
   }
   for (let i = enemyList.length - 1; i >= 0; i--) {
-    if (enemyList[i].health <= 0) {
+    if (enemyList[i].health <= 0 || enemyList[i].x + enemyList[i].width <= 0) {
       enemyList.splice(i, 1);
     }
   }
